@@ -7,7 +7,7 @@ use nym_client::clients::{NymClient, SocketType};
 use clap::ArgMatches;
 use crypto::identity::{MixnetIdentityKeyPair, MixnetIdentityPublicKey};
 use std::net::{ToSocketAddrs, SocketAddr};
-
+use std::path::Path;
 
 #[no_mangle]
 pub unsafe extern "C" fn init(id: *const c_char) -> *mut c_char {
@@ -17,6 +17,12 @@ pub unsafe extern "C" fn init(id: *const c_char) -> *mut c_char {
         Err(_) => "you",
     };
     let pathfinder = Pathfinder::new(recipient.to_string());
+
+    if Path::new(&pathfinder.config_dir).exists() {
+        return CString::new(format!("The id already exists."))
+            .unwrap()
+            .into_raw()
+    }
 
     println!("Writing keypairs to {:?}...", pathfinder.config_dir);
     let mix_keys = crypto::identity::DummyMixIdentityKeyPair::new();
@@ -29,14 +35,20 @@ pub unsafe extern "C" fn init(id: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn start_ws(id: *const c_char) {
+pub unsafe extern "C" fn start_ws(id: *const c_char, directory: *const c_char) {
     let c_str = CStr::from_ptr(id);
     let recipient = match c_str.to_str() {
         Ok(s) => s,
         Err(_) => "you",
     };
 
-    let directory_server = "http://192.168.1.24:8080".to_string();
+    let directory_str = CStr::from_ptr(directory);
+    let directory_endpoint = match directory_str.to_str() {
+        Ok(s) => s,
+        Err(_) => "https://directory.nymtech.net",
+    };
+
+    let directory_server = directory_endpoint.to_string();
     println!("Listening for messages...");
 
     let socket_address = "127.0.0.1:9001"
