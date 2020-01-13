@@ -7,6 +7,6 @@ char *init(const char *id);
 
 void init_release(char *to);
 
-char *start_ws(const char *id);
+void start_ws(const char *id, const char *directory);
 
 void start_ws_release(char *to);
