@@ -14,8 +14,10 @@ crate-type = ["staticlib", "cdylib"]
 jni = { version = "0.13.1", default-features = false }
 
 [dependencies]
-nym-client = { path = "../nym/clients/nym-client" }
+# mix-client = { path = "../nym/common/clients/mix-client" }
+nym-client = { path = "../nym/nym-client/" }
 crypto = {path = "../nym/common/crypto"}
+pemstore = {path = "../nym/common/pemstore"}
 pem = "0.7.0"
 dirs = "2.0.2"
 env_logger = "0.7.1"

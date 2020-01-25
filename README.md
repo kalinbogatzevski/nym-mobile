@@ -32,6 +32,18 @@ Nym client port to mobile devices
 ### Export C headers from Rust code 
 
     $ cbindgen src/lib.rs -l c > rustylib.h
+
+### iOS
+
     $ cargo lipo --release
 
+### Android 
 
+    $ cargo ndk --target aarch64-linux-android --android-platform 22 -- build --release
+    $ cargo ndk --target armv7-linux-androideabi --android-platform 22 -- build --release
+    $ cargo ndk --target i686-linux-android --android-platform 22 -- build --release
+    $ cargo ndk --target x86_64-linux-android --android-platform 22  -- build --release
+
+### TODO
+
+[] How to reconnect ?

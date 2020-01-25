@@ -1,12 +1,13 @@
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
-use nym_client::persistence::pathfinder::Pathfinder;
-use nym_client::persistence::pemstore;
-use nym_client::persistence::pemstore::PemStore;
-use nym_client::clients::{NymClient, SocketType};
-use clap::ArgMatches;
-use crypto::identity::{MixnetIdentityKeyPair, MixnetIdentityPublicKey};
-use std::net::{ToSocketAddrs, SocketAddr};
+use std::net::{ToSocketAddrs};
+use nym_client::config::persistance::pathfinder::ClientPathfinder;
+use pemstore::pemstore::PemStore;
+use nym_client::client::{NymClient, SocketType};
+use crypto::identity::MixnetIdentityKeyPair;
+use crypto::identity::DummyMixIdentityKeyPair;
+use crypto::identity::MixnetIdentityPublicKey;
+
 use std::path::Path;
 
 #[no_mangle]
@@ -16,7 +17,7 @@ pub unsafe extern "C" fn init(id: *const c_char) -> *mut c_char {
         Ok(s) => s,
         Err(_) => "you",
     };
-    let pathfinder = Pathfinder::new(recipient.to_string());
+    let pathfinder = ClientPathfinder::new(recipient.to_string());
 
     if Path::new(&pathfinder.config_dir).exists() {
         return CString::new(format!("The id already exists."))
@@ -51,15 +52,15 @@ pub unsafe extern "C" fn start_ws(id: *const c_char, directory: *const c_char) {
     let directory_server = directory_endpoint.to_string();
     println!("Listening for messages...");
 
-    let socket_address = "127.0.0.1:9001"
+    let socket_address = ("127.0.0.1", 9001)
         .to_socket_addrs()
         .expect("Failed to combine host and port")
         .next()
         .expect("Failed to extract the socket address from the iterator");
 
-    let keypair = pemstore::read_mix_identity_keypair_from_disk(recipient.to_string());
-    // TODO: reading auth_token from disk (if exists);
-
+    let keypair: DummyMixIdentityKeyPair = PemStore::new(ClientPathfinder::new(recipient.to_string()))
+        .read_identity()
+        .unwrap();
     let mut temporary_address = [0u8; 32];
     let public_key_bytes = keypair.public_key().to_bytes();
     temporary_address.copy_from_slice(&public_key_bytes[..]);
@@ -74,7 +75,6 @@ pub unsafe extern "C" fn start_ws(id: *const c_char, directory: *const c_char) {
 
     client.start().unwrap();
 
-    
 }
 
 #[no_mangle]
