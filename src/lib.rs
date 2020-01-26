@@ -50,7 +50,7 @@ pub unsafe extern "C" fn start_ws(id: *const c_char, directory: *const c_char) {
     };
 
     let directory_server = directory_endpoint.to_string();
-    println!("Listening for messages...");
+    println!("Directory Service: {:?}", directory_server);
 
     let socket_address = ("127.0.0.1", 9001)
         .to_socket_addrs()
