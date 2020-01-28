@@ -66,7 +66,7 @@ pub unsafe extern "C" fn start_ws(id: *const c_char, directory: *const c_char) {
     temporary_address.copy_from_slice(&public_key_bytes[..]);
     let auth_token = None;
     let client = NymClient::new(
-        temporary_address,
+        keypair,
         socket_address,
         directory_server,
         auth_token,
