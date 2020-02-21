@@ -14,11 +14,19 @@ crate-type = ["staticlib", "cdylib"]
 jni = { version = "0.13.1", default-features = false }
 
 [dependencies]
-# mix-client = { path = "../nym/common/clients/mix-client" }
+mix-client = { path = "../nym/common/clients/mix-client" }
 nym-client = { path = "../nym/nym-client/" }
 crypto = {path = "../nym/common/crypto"}
+config = {path = "../nym/common/config"}
 pemstore = {path = "../nym/common/pemstore"}
+sfw-provider-requests = { path = "../nym/sfw-provider/sfw-provider-requests" }
+directory-client = { path = "../nym/common/clients/directory-client" }
+topology = {path = "../nym/common/topology" }
 pem = "0.7.0"
 dirs = "2.0.2"
 env_logger = "0.7.1"
 clap = "2.33.0"
+tokio = { version = "0.2", features = ["full"] }
+tokio-tungstenite = "0.10.1"
+sphinx = { git = "https://github.com/nymtech/sphinx", rev="5862939c52e4dd76f836856a01787faec32152b4" }
+provider-client = { path = "../nym/common/clients/provider-client" }
